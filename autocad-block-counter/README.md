@@ -25,15 +25,15 @@ Open the `.csproj` file in Visual Studio and **Build** the solution to generate 
 Inside the AutoCAD command line, type:
 ```text
 NETLOAD
-
+```
 Browse and select the compiled SelectCount.dll from your disk.
-3. Run the Command
+### 3. Run the Command
 
 Type the custom command:
 ```text
 BlockCounter
-
-Select the blocks on your screen. The program will count all unique block references and save a BOM.csv file on your Desktop.
+```
+### 4. Select the blocks on your screen. The program will count all unique block references and save a BOM.csv file on your Desktop.
 📂 Project Structure
 
     BlockCounter.cs – Main logic for block counting and AutoCAD API interaction.
