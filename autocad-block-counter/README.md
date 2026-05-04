@@ -8,8 +8,6 @@ A professional C# plug-in for AutoCAD designed to automate block counting and da
 *   **Selective Selection**: Allows users to count objects from any selection set (window, crossing, or individual selection).
 *   **Transaction Safety**: Implements AutoCAD's `TransactionManager` to ensure drawing database stability and prevent crashes during object access.
 *   **Excel Integration**: Generates a `.csv` file directly on the user's Desktop with UTF-8 encoding, ready for immediate use in Microsoft Excel.
-*   **Clean Architecture**: Follows SOLID principles by separating AutoCAD database logic from File I/O operations.
-
 ## 🛠 Technical Stack
 
 *   **Language**: C# (.NET)
