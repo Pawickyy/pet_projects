@@ -16,61 +16,62 @@ public class BlockCounter
     {
         Document doc = Application.DocumentManager.MdiActiveDocument;
         Editor ed = doc.Editor;
-        Dictionary<string, int> licznikBlokow = new Dictionary<string, int>();
+        Dictionary<string, int> blockCounts = new Dictionary<string, int>();
 
         try
         {
             using (Transaction tr = doc.Database.TransactionManager.StartTransaction())
             {
-                PromptSelectionResult acSSPrompt = ed.GetSelection();
+                PromptSelectionResult selectionRes = ed.GetSelection();
 
-                if (acSSPrompt.Status == PromptStatus.OK)
+                if (selectionRes.Status == PromptStatus.OK)
                 {
-                    SelectionSet acSSet = acSSPrompt.Value;
+                    SelectionSet selectionSet = selectionRes.Value;
 
-                    foreach (SelectedObject acSSObj in acSSet)
+                    foreach (SelectedObject selectedObj in selectionSet)
                     {
-                        if (acSSObj == null) continue;
+                        if (selectedObj == null) continue;
 
-                        BlockReference acBlkRef = tr.GetObject(acSSObj.ObjectId, OpenMode.ForRead) as BlockReference;
-                        if (acBlkRef != null)
+                        BlockReference blockRef = tr.GetObject(selectedObj.ObjectId, OpenMode.ForRead) as BlockReference;
+                        if (blockRef != null)
                         {
-                            ObjectId idBlock = acBlkRef.DynamicBlockTableRecord;
-                            BlockTableRecord btr = tr.GetObject(idBlock, OpenMode.ForRead) as BlockTableRecord;
+                            // Using DynamicBlockTableRecord to get the proper name even for dynamic blocks
+                            ObjectId blockId = blockRef.DynamicBlockTableRecord;
+                            BlockTableRecord btr = tr.GetObject(blockId, OpenMode.ForRead) as BlockTableRecord;
                             
                             string blockName = btr.Name;
                             
-                            if (licznikBlokow.ContainsKey(blockName))
-                                licznikBlokow[blockName]++;
+                            if (blockCounts.ContainsKey(blockName))
+                                blockCounts[blockName]++;
                             else
-                                licznikBlokow.Add(blockName, 1);
+                                blockCounts.Add(blockName, 1);
                         }
                     }
                 }
                 tr.Commit();
             }
 
-            if (licznikBlokow.Count > 0)
+            if (blockCounts.Count > 0)
             {
-                SaveToCsv(licznikBlokow);
-                ed.WriteMessage("\n[Sukces]: Dane wyeksportowane do BOM.csv na pulpicie.");
+                SaveToCsv(blockCounts);
+                ed.WriteMessage("\n[Success]: Data exported to BOM.csv on your Desktop.");
             }
             else
             {
-                ed.WriteMessage("\n[Info]: Nie zaznaczono żadnych bloków.");
+                ed.WriteMessage("\n[Info]: No blocks were selected.");
             }
         }
         catch (System.Exception ex)
         {
-            ed.WriteMessage("\n[Błąd]: " + ex.Message);
+            ed.WriteMessage("\n[Error]: " + ex.Message);
         }
     }
 
-    private static void SaveToCsv(Dictionary<string, int> dane)
+    private static void SaveToCsv(Dictionary<string, int> data)
     {
         var csv = new StringBuilder();
-        csv.AppendLine("Nazwa bloku;Ilosc");
-        foreach (var item in dane)
+        csv.AppendLine("Block Name;Quantity");
+        foreach (var item in data)
         {
             csv.AppendLine($"{item.Key};{item.Value}");
         }
